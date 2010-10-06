@@ -83,6 +83,7 @@ type
     FFileName: PChar;
     FFlags: TFileSystemFlags;
     function CompInt(aInt1, aInt2: Int64): Integer;
+    procedure SetFileSystemRecord(const aFileSystemRecord: TWin32FindData);
   public
     constructor Create(const aFileSystemRecord: TWin32FindData);
     destructor Destroy; override;
@@ -92,7 +93,6 @@ type
     function Compare(aObject: TFileSystemObject; aFlags: TCompareFlags): Integer; virtual; abstract;
     {проверка: существует ли еще файл, и обновление его данных}
     function IsValid: Boolean; virtual; abstract;
-    procedure SetFileSystemRecord(const aFileSystemRecord: TWin32FindData);
     procedure GetFileSystemRecord(var aFileSystemRecord
       {$IFDEF CONTROL_TYPE}: TWin32FindData{$ENDIF});
 //    property FileAttributes: DWORD read FFileAttributes;
