@@ -304,7 +304,7 @@ var
    Index: Byte;
    RootDirectory: String;
    I: LongInt;
-   tmpStr: array[0..MAX_PATH] of Char;
+//   tmpStr: array[0..MAX_PATH] of Char;
 begin
      if FileExists(GetPluginPath+'exclude.txt') then
        begin

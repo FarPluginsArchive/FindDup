@@ -73,7 +73,11 @@ const
   (ItemType:DI_BUTTON;      X1: 7; Y1: 10; X2: 0; Y2: 0; Focus: 0; Selected: False; Flags:0; DefaultButton:True; Data: (MsgID: Cardinal(msgOK)))
   );
 begin
+{$IFNDEF FPC}
   pMyDlgProc:=SettingsDlgProc;
+{$ELSE}
+  pMyDlgProc:=@SettingsDlgProc;
+{$ENDIF}
   GetMem(items, SizeOf(TFarDialogItem)*itemsnum);
   ZeroMemory(items, SizeOf(TFarDialogItem)*itemsnum);
   InitDialogItems(@initarray, items, itemsnum);
