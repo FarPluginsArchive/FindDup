@@ -1,0 +1,35 @@
+LANGUAGE LANG_RUSSIAN,1
+
+1 VERSIONINFO LOADONCALL MOVEABLE DISCARDABLE IMPURE 
+FILEVERSION 0, 0, 0, 7
+PRODUCTVERSION 0, 0, 0, 7
+FILEFLAGSMASK VS_FFI_FILEFLAGSMASK
+FILEFLAGS VS_FF_PRERELEASE
+FILEOS VOS__WINDOWS32
+FILETYPE VFT_DLL
+{
+ BLOCK "StringFileInfo"
+ {
+  BLOCK "041904E3"
+  {
+   VALUE "CompanyName", "http://home.lanck.net/suhinin\000"
+   VALUE "FileDescription", "FAR PlugIn module: Find Duplicate\000"
+   VALUE "FileVersion", "0.0.0.7\000"
+   VALUE "InternalName", "FindDup.dll\000"
+   VALUE "LegalCopyright", "Alexey Suhinin\000"
+   VALUE "LegalTrademarks", "\000"
+   VALUE "OriginalFilename", "FindDup.dll\000"
+   VALUE "ProductName", "\000"
+   VALUE "ProductVersion", "0.0.0.7\000"
+   VALUE "Comments", "\000"
+  }
+
+ }
+
+ BLOCK "VarFileInfo"
+ {
+  VALUE "Translation", 1049, 1251
+ }
+
+}
+
