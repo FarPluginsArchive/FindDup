@@ -47,7 +47,9 @@ type
     procedure Clear; {$IFNDEF OLD_PAS} override; {$ENDIF}
     procedure DeleteFileByIndex(I, J: Integer);
     procedure Delete(Index: Integer);
+{$IFDEF VALIDATE}
     procedure Validate;
+{$ENDIF}
     procedure Pack;
     procedure ChangeMode;
 {$IFDEF SORT_PANEL}
@@ -204,6 +206,7 @@ begin
   end;
 end;
 
+{$IFDEF VALIDATE}
 procedure TFileGroupList.Validate;
 var
   I, J: LongInt;
@@ -214,6 +217,8 @@ begin
         Items[I].Items[J].IsValid;
     Pack;
 end;
+{$ENDIF}
+
 
 procedure TFileGroupList.Pack;
 var

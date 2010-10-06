@@ -92,7 +92,9 @@ type
     procedure Free;{ virtual;}
     function Compare(aObject: TFileSystemObject; aFlags: TCompareFlags): Integer; virtual; abstract;
     {проверка: существует ли еще файл, и обновление его данных}
+{$IFDEF VALIDATE}
     function IsValid: Boolean; virtual; abstract;
+{$ENDIF}
     procedure GetFileSystemRecord(var aFileSystemRecord
       {$IFDEF CONTROL_TYPE}: TWin32FindData{$ENDIF});
 //    property FileAttributes: DWORD read FFileAttributes;
@@ -112,7 +114,9 @@ type
 {$ENDIF}
   public
     function Compare(aObject: TFileSystemObject; aFlags: TCompareFlags): Integer; override;
+{$IFDEF VALIDATE}
     function IsValid: Boolean; override;
+{$ENDIF}
   end;
 
   TDirectoryObject = class(TFileSystemObject)
@@ -123,7 +127,9 @@ type
     constructor Create(aFileSystemRecord: TWin32FindData);
     destructor Destroy; override;
     function Compare(aObject: TFileSystemObject; aFlags: TCompareFlags): Integer; override;
+{$IFDEF VALIDATE}
     function IsValid: Boolean; override;
+{$ENDIF}
     procedure AddMember(aObject: TFileSystemObject);
 //    procedure Free; override;
   end;
@@ -468,6 +474,7 @@ begin
     Include(FFlags, flDeleted);
 end;
 }
+{$IFDEF VALIDATE}
 function TFileObject.IsValid: Boolean;
 var
    AttributeData: TWin32FileAttributeData;
@@ -480,6 +487,7 @@ begin
   else
     Include(FFlags, flDeleted);
 end;
+{$ENDIF}
 
 
 // реализация TDirectoryObject
@@ -526,6 +534,7 @@ begin
     Result:=0;
 end;
 
+{$IFDEF VALIDATE}
 function TDirectoryObject.IsValid: Boolean;
 begin
   Result:=False;
@@ -537,6 +546,7 @@ begin
   else
     Include(FFlags, flDeleted);
 end;
+{$ENDIF}
 
 procedure TDirectoryObject.AddMember(aObject: TFileSystemObject);
 begin
