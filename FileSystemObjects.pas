@@ -32,12 +32,12 @@ uses
     SysUtils;
 
 type
-{Возможные флаги объекта TFileSystemObject:
-  flDeleted - объект удалён;
-  flOpenFalse - попытка открыть файл на чтение (для просчета контрольной суммы)
-                неудалась;
-  flMD5Calc, flCRC32Calc - установлен,  если соответствующая контрольная сумма
-                           уже считалась и хранится в TFileObject
+{┬ючьюцэ√х Їыруш юс·хъЄр TFileSystemObject:
+  flDeleted - юс·хъЄ єфры╕э;
+  flOpenFalse - яюя√Єър юЄъЁ√Є№ Їрщы эр ўЄхэшх (фы  яЁюёўхЄр ъюэЄЁюы№эющ ёєьь√)
+                эхєфрырё№;
+  flMD5Calc, flCRC32Calc - єёЄрэютыхэ,  хёыш ёююЄтхЄёЄтє■∙р  ъюэЄЁюы№эр  ёєььр
+                           єцх ёўшЄрырё№ ш їЁрэшЄё  т TFileObject
 }
   TFileSystemFlags = set of (flDeleted, flOpenFalse, flMD5Calc, flCRC32Calc);
 
@@ -57,15 +57,15 @@ type
     constructor Create;
     destructor Destroy; override;
     function Add(aObject: TFileSystemObject): Integer;
-    {Идентичны ли контейнеры? (сравнение директорий!)}
+    {╚фхэЄшўэ√ ыш ъюэЄхщэхЁ√? (ёЁртэхэшх фшЁхъЄюЁшщ!)}
     function IsDuplicate(aObject: TFileSystemObject): Boolean;
-    {Сравнение контейнеров: сначала сортируем файлы по размеру,
-     затем циклически сравниваем
-     !!!а что если 2 файла с одинаковым размером??? - ошибка!!!}
+    {╤Ёртэхэшх ъюэЄхщэхЁют: ёэрўрыр ёюЁЄшЁєхь Їрщы√ яю ЁрчьхЁє,
+     чрЄхь Ўшъышўхёъш ёЁртэштрхь
+     !!!р ўЄю хёыш 2 Їрщыр ё юфшэръют√ь ЁрчьхЁюь??? - ю°шсър!!!}
     function Compare(aObject: TFileSystemObjectList; aFlags: TCompareFlags): Integer;
     procedure Clear; {$IFNDEF OLD_PAS} override; {$ENDIF}
     procedure Delete(Index: Integer);
-    {сортирует элементы по размеру}
+    {ёюЁЄшЁєхЄ ¤ыхьхэЄ√ яю ЁрчьхЁє}
     procedure Sort;
 //    procedure SaveToFile(aFileStream: TFileStream);
     property Items[Index: Integer]: TFileSystemObject read GetItems write SetItems;{$IFNDEF OLD_PAS} default; {$ENDIF}
@@ -74,7 +74,7 @@ type
 
   TFileSystemObject = class
   private
-    FRefCount: Byte;         {количество ссылок на объект}
+    FRefCount: Byte;         {ъюышўхёЄтю ёё√ыюъ эр юс·хъЄ}
     FFileAttributes: DWORD;
     FCreationTime: TFileTime;
     FLastAccessTime: TFileTime;
@@ -90,7 +90,7 @@ type
     procedure DecRef;
     procedure Free;{ virtual;}
     function Compare(aObject: TFileSystemObject; aFlags: TCompareFlags): Integer; virtual; abstract;
-    {проверка: существует ли еще файл, и обновление его данных}
+    {яЁютхЁър: ёє∙хёЄтєхЄ ыш х∙х Їрщы, ш юсэютыхэшх хую фрээ√ї}
     function IsValid: Boolean; virtual; abstract;
     procedure SetFileSystemRecord(const aFileSystemRecord: TWin32FindData);
     procedure GetFileSystemRecord(var aFileSystemRecord
@@ -130,7 +130,7 @@ type
 
 implementation
 
-{реализация TFileSystemObjectList}
+{ЁхрышчрЎш  TFileSystemObjectList}
 
 constructor TFileSystemObjectList.Create;
 begin
@@ -239,7 +239,7 @@ begin
                            TFileObj(Items[i]).SaveToFile(aFileStream);
 end;
 }
-// реализация TFileSystemObject
+// ЁхрышчрЎш  TFileSystemObject
 
 constructor TFileSystemObject.Create(const aFileSystemRecord: TWin32FindData);
 begin
@@ -316,7 +316,7 @@ begin
       Result:=-1;
 end;
 
-// реализация TFileObject
+// ЁхрышчрЎш  TFileObject
 
 {$IFDEF MD5}
 function TFileObject.CalculateMD5;
@@ -482,7 +482,7 @@ begin
 end;
 
 
-// реализация TDirectoryObject
+// ЁхрышчрЎш  TDirectoryObject
 
 constructor TDirectoryObject.Create(aFileSystemRecord: TWin32FindData);
 begin

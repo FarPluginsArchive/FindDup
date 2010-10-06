@@ -72,7 +72,7 @@ begin
 end;
 {$ENDIF}
 
-{реализация TFileGroupList}
+{ЁхрышчрЎш  TFileGroupList}
 
 function TFileGroupList.GetItems(Index: Integer): TFileSystemObjectList;
 begin
@@ -126,17 +126,17 @@ var
   tmpFileGroup: TFileSystemObjectList;
   I: Integer;
 begin
-{если количество групп объектов больше нуля, то пытаемся найти группу содержащую
- дубликаты текущего объекта.}
+{хёыш ъюышўхёЄтю уЁєяя юс·хъЄют сюы№°х эєы , Єю я√Єрхьё  эрщЄш уЁєяяє ёюфхЁцр∙є■
+ фєсышърЄ√ Єхъє∙хую юс·хъЄр.}
      I:=0;
      if Count>0 then
      begin
        while (I<Count) and
              (not TFileSystemObjectList(Items[I]).IsDuplicate(aFileObj)) do Inc(I);
      end;
-{если количество групп объектов равно нулю или индекс найденной группы больше
- общего количества групп, то текущий объект не имеет дубликатов среди списка
- дубликатов, ищем его дубликаты в списке объектов не имеющих дубликатов}
+{хёыш ъюышўхёЄтю уЁєяя юс·хъЄют Ёртэю эєы■ шыш шэфхъё эрщфхээющ уЁєяя√ сюы№°х
+ юс∙хую ъюышўхёЄтр уЁєяя, Єю Єхъє∙шщ юс·хъЄ эх шьххЄ фєсышърЄют ёЁхфш ёяшёър
+ фєсышърЄют, ш∙хь хую фєсышърЄ√ т ёяшёъх юс·хъЄют эх шьх■∙шї фєсышърЄют}
      if (Count=0) or (I=Count) then
        begin
          I:=0;
@@ -146,20 +146,20 @@ begin
                  (FUnGrpFileList.Items[I].Compare(aFileObj, [cfHash])<>0) do Inc(I);
          end;
          if (FUnGrpFileList.Count=0) or (I=FUnGrpFileList.Count) then
-{если число объектов в списке равно нулю или индекс найденного объекта больше
- общего числа объектов, то текущий объект не имеет дубликатов. Добавляем его в
- список не дубликатов}
+{хёыш ўшёыю юс·хъЄют т ёяшёъх Ёртэю эєы■ шыш шэфхъё эрщфхээюую юс·хъЄр сюы№°х
+ юс∙хую ўшёыр юс·хъЄют, Єю Єхъє∙шщ юс·хъЄ эх шьххЄ фєсышърЄют. ─юсрты хь хую т
+ ёяшёюъ эх фєсышърЄют}
            Result:=FUnGrpFileList.Add(aFileObj)
          else
-{дубликат текущего объекта найден в списке объектов не имеющих дубликатов}
+{фєсышърЄ Єхъє∙хую юс·хъЄр эрщфхэ т ёяшёъх юс·хъЄют эх шьх■∙шї фєсышърЄют}
            begin
-{создаем новую группу в списке дубликатов}
+{ёючфрхь эютє■ уЁєяяє т ёяшёъх фєсышърЄют}
              tmpFileGroup:=TFileSystemObjectList.Create;
              inherited Add(pointer(tmpFileGroup));
-{заносим в созданную группу найденный и текущий объект}
+{чрэюёшь т ёючфрээє■ уЁєяяє эрщфхээ√щ ш Єхъє∙шщ юс·хъЄ}
              tmpFileGroup.Add(FUnGrpFileList.Items[I]);
              Result:=tmpFileGroup.Add(aFileObj);
-{удаляем найденный объект из списка не дубликатов}
+{єфры хь эрщфхээ√щ юс·хъЄ шч ёяшёър эх фєсышърЄют}
              FUnGrpFileList.Delete(I);
              Inc(FGroupedFilesCount, 2);
            end;
@@ -224,9 +224,9 @@ begin
   if (not (flShowUnGroupped in FFlags)) and
      (
 {$IFDEF AUTO_GROUP_REMOVE}
-      (Items[I].Count<2) or // скрываем группу, если в ней осталось менее двух элементов
+      (Items[I].Count<2) or // ёъЁ√трхь уЁєяяє, хёыш т эхщ юёЄрыюё№ ьхэхх фтєї ¤ыхьхэЄют
 {$ELSE}
-      (Items[I].Count<1) or // скрываем пустую группу
+      (Items[I].Count<1) or // ёъЁ√трхь яєёЄє■ уЁєяяє
 {$ENDIF}
       (gfDeleted in Items[I].Flags)) then
     Delete(I)
