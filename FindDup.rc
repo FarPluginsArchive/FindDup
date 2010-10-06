@@ -15,12 +15,12 @@ BEGIN
         BEGIN
    	    VALUE "CompanyName", "http://home.lanck.net/suhinin\0"
             VALUE "FileDescription", "FAR PlugIn module: Find Duplicate\0"
-            VALUE "FileVersion", "0.0.0.7\0"
+            VALUE "FileVersion", "0.0.0.8 r7\0"
             VALUE "InternalName", "FindDup.dll\0"
             VALUE "LegalCopyright", "(C) 2010, Alexey Suhinin\0"
             VALUE "OriginalFilename", "finddup.dll\0"
             VALUE "ProductName", "FindDup\000"
-            VALUE "ProductVersion", "0.0.0.7\0"
+            VALUE "ProductVersion", "0.0.0.8 r7\0"
         END
     END
     BLOCK "VarFileInfo"
