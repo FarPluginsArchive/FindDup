@@ -348,12 +348,12 @@ begin
 
 (*
               case GetDriveType(PChar(@RootDirectory[1])) of
-//                DRIVE_REMOVABLE: Writeln(F, 'сменный)');
+//                DRIVE_REMOVABLE: Writeln(F, 'ёьхээ√щ)');
                 DRIVE_FIXED,
                 DRIVE_CDROM:     begin
                                    Scan(RootDirectory);
                                  end;
-                DRIVE_REMOTE:    Writeln(F, 'сетевой)');
+                DRIVE_REMOTE:    Writeln(F, 'ёхЄхтющ)');
                 DRIVE_CDROM:     Writeln(F, 'CD-ROM)');
                 DRIVE_RAMDISK:   Writeln(F, 'RAM)');
               end;
@@ -393,14 +393,14 @@ begin
       else
         begin
 {$IFDEF FullRescan}
-         if FFlagStop then   // если предыдущий поиск был прерван пользователем,
-            begin            // то полное пересканирование,
+         if FFlagStop then   // хёыш яЁхф√фє∙шщ яюшёъ с√ы яЁхЁтрэ яюы№чютрЄхыхь,
+            begin            // Єю яюыэюх яхЁхёърэшЁютрэшх,
               FFlagStop:=False;
               FFlagPressBreak:=False;
               FFileGroupList.Clear;
               Result:=ProcessAllDisks;
             end
-          else               // иначе проверка валидности информации
+          else               // шэрўх яЁютхЁър трышфэюёЄш шэЇюЁьрЎшш
             begin
 {$ENDIF FullRescan}
               FFlagStop:=False;
@@ -532,7 +532,7 @@ begin
           end;
           if FFlagUseAnotherPanel and PanelInfo.Focus then
           begin
-            // показ содержимого каталога под курсором на противоположной панели
+            // яюърч ёюфхЁцшьюую ърЄрыюур яюф ъєЁёюЁюь эр яЁюЄштюяюыюцэющ ярэхыш
             with PanelInfo.PanelItems^[PanelInfo.CurrentItem] do
 //            if Flags and PPIF_GROUP) = 0 and
             begin
@@ -559,7 +559,7 @@ function TFarPlugin.ProcessKey(aKey: Integer; aControlState: UINT): Integer;
 begin
 
 
-  {скрытие: скрываем текущую позицию и прерываем обработку}
+  {ёъЁ√Єшх: ёъЁ√трхь Єхъє∙є■ яючшЎш■ ш яЁхЁ√трхь юсЁрсюЄъє}
   Result:=Integer(False);
   if (aControlState=0) and (aKey=VK_F7) then
   begin
@@ -570,14 +570,14 @@ begin
   end;
 
 {$IFNDEF VALIDATE}
-  {при перемещении файла: скрываем текущую позицию и возвращаем обработку FAR}
+  {яЁш яхЁхьх∙хэшш Їрщыр: ёъЁ√трхь Єхъє∙є■ яючшЎш■ ш тючтЁр∙рхь юсЁрсюЄъє FAR}
   if (aControlState=0) and (aKey=VK_F6) then
   begin
     ProcessRemoveKey;
     Result:=Integer(False);
   end;
 
-  {при удалении файла: скрываем текущую позицию и возвращаем обработку FAR}
+  {яЁш єфрыхэшш Їрщыр: ёъЁ√трхь Єхъє∙є■ яючшЎш■ ш тючтЁр∙рхь юсЁрсюЄъє FAR}
   if (aControlState=0) and (aKey=VK_F8) then
   begin
     ProcessRemoveKey;
