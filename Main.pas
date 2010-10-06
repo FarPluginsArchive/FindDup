@@ -215,16 +215,16 @@ begin
     I:=0;
     while (I<FExcludeDirMasks.Count) and
           (CmpName(PChar(FExcludeDirMasks.Strings[I]),
-           PChar(Cat+StrPas(@FindData.cFileName)+'\'),
+           PChar(Cat),
            False)=False) do Inc(I);
     if I<>FExcludeDirMasks.Count then Exit;
   end;
+{
   Move(Cat[1], FindData.cFileName, Length(Cat));
   FindData.cFileName[Length(Cat)]:=#0;
   FindData.nFileSizeLow:=0;
   FindData.dwFileAttributes:=GetFileAttributes(FindData.cFilename);
-  Result:=TDirectoryObject.Create(FindData);
-
+}
 
   SetLastError(0);
 {$IFNDEF VPASCAL}
@@ -236,58 +236,62 @@ begin
   if GetLastError=0 then
     begin
       if hFindFile<>INVALID_HANDLE_VALUE then
-      begin
-        Found:=True;
-        while (Found<>False) and (not isBreak) do
-        begin
-          if (FindData.dwFileAttributes and faDirectory)<>0 then
-            begin
-              if (StrPas(@FindData.cFileName)<>'.') and
-                 (StrPas(@FindData.cFileName)<>'..') then
-              begin
-                tmpDirectoryObject:=FindDupDir(Cat+StrPas(@FindData.cFileName)+'\');
-                if Assigned(tmpDirectoryObject) then
-                begin
-                  tmpDirectoryObject.SetFileSystemRecord(FindData);
-                  Result.AddMember(tmpDirectoryObject);
-                end;
-              end;
-            end
-          else
-            begin
-              if Assigned(FIncludeFileMasks) then
-                begin
-                  I:=0;
-                  while (I<FIncludeFileMasks.Count) and
-                        (CmpName(PChar(FIncludeFileMasks.Strings[I]),
-                         @FindData.cFileName,
-                         False)=False) do Inc(I);
-                  if I<>FIncludeFileMasks.Count then
-                  begin
-                    Move(FindData.cFileName,
-                         FindData.cFileName[Length(Cat)],
-                         StrLen(FindData.cFileName)+1);
-                    Move(Cat[1],
-                         FindData.cFileName,
-                         Length(Cat));
-                    Result.AddMember(TFileObject.Create(FindData));
-                  end;
-                end
-              else
-                begin
-                  Move(FindData.cFileName,
-                       FindData.cFileName[Length(Cat)],
-                       StrLen(FindData.cFileName)+1);
-                  Move(Cat[1],
-                       FindData.cFileName,
-                       Length(Cat));
-                  Result.AddMember(TFileObject.Create(FindData));
-                end;
-            end;
+	if ((FindData.dwFileAttributes and faDirectory)<>0) and (StrPas(@FindData.cFileName)='.') then
+	begin
+  	  Move(Cat[1], FindData.cFileName, Length(Cat));
+          FindData.cFileName[Length(Cat)]:=#0;
+  	  Result:=TDirectoryObject.Create(FindData);
           Found:=FindNextFile(hFindFile, FindData);
+          while (Found<>False) and (not isBreak) do                                   
+          begin                                                                       
+            if (FindData.dwFileAttributes and faDirectory)<>0 then                    
+              begin                                                                   
+                if (StrPas(@FindData.cFileName)<>'.') and                             
+                   (StrPas(@FindData.cFileName)<>'..') then                           
+                begin                                                                 
+                  tmpDirectoryObject:=FindDupDir(Cat+StrPas(@FindData.cFileName)+'\');
+                  if Assigned(tmpDirectoryObject) then                                
+                  begin                                                               
+//                    tmpDirectoryObject.SetFileSystemRecord(FindData);                 
+                    Result.AddMember(tmpDirectoryObject);                             
+                  end;                                                                
+                end;                                                                  
+              end                                                                     
+            else                                                                      
+              begin                                                                   
+                if Assigned(FIncludeFileMasks) then                                   
+                  begin                                                               
+                    I:=0;                                                             
+                    while (I<FIncludeFileMasks.Count) and                             
+                          (CmpName(PChar(FIncludeFileMasks.Strings[I]),               
+                           @FindData.cFileName,                                       
+                           False)=False) do Inc(I);                                   
+                    if I<>FIncludeFileMasks.Count then                                
+                    begin                                                             
+                      Move(FindData.cFileName,                                        
+                           FindData.cFileName[Length(Cat)],                           
+                           StrLen(FindData.cFileName)+1);                             
+                      Move(Cat[1],                                                    
+                           FindData.cFileName,                                        
+                           Length(Cat));                                              
+                      Result.AddMember(TFileObject.Create(FindData));                 
+                    end;                                                              
+                  end                                                                 
+                else                                                                  
+                  begin                                                               
+                    Move(FindData.cFileName,                                          
+                         FindData.cFileName[Length(Cat)],                             
+                         StrLen(FindData.cFileName)+1);                               
+                    Move(Cat[1],                                                      
+                         FindData.cFileName,                                          
+                         Length(Cat));                                                
+                    Result.AddMember(TFileObject.Create(FindData));                   
+                  end;                                                                
+              end;                                                                    
+            Found:=FindNextFile(hFindFile, FindData);                                 
+          end;                                                                        
+          Windows.FindClose(hFindFile);                                               
         end;
-        Windows.FindClose(hFindFile);
-      end;
       FFileGroupList.Add(Result);
     end
   else
@@ -326,11 +330,13 @@ begin
          if FSearchPaths.Count>0 then
          for I:=0 to FSearchPaths.Count-1 do
          begin
-           ConvertNameToReal(PChar(FSearchPaths[I]), @tmpStr, SizeOf(tmpStr));
+//           ConvertNameToReal(PChar(FSearchPaths[I]), @tmpStr, SizeOf(tmpStr));
            if FileExists(GetPluginPath+'FindDupDir.flg') then
-             FindDupDir(StrPas(@tmpStr))
+//             FindDupDir(StrPas(@tmpStr))
+             FindDupDir(PChar(FSearchPaths[I]))
            else
-             FindDupFile(StrPas(@tmpStr));
+//             FindDupFile(StrPas(@tmpStr));
+             FindDupFile(PChar(FSearchPaths[I]));
          end;
          FSearchPaths.Free;
        end
