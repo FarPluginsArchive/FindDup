@@ -57,7 +57,7 @@ type
     constructor Create;
     destructor Destroy; override;
     function Add(aObject: TFileSystemObject): Integer;
-    {Идентичны ли контейнеры? (сравнение директорий!)}
+    {Идентичен ли объект уже содержащимся в контейнере? (сравнение с первым элементом в контейнере)}
     function IsDuplicate(aObject: TFileSystemObject): Boolean;
     {Сравнение контейнеров: сначала сортируем файлы по размеру,
      затем циклически сравниваем
