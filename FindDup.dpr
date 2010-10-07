@@ -87,7 +87,7 @@ begin
 {$ENDIF}
 end;
 
-function GetFindData(Plugin: THandle; var aPanelItems: PPluginPanelItemArr;
+function GetFindData(Plugin: THandle; var aPanelItems: PPluginPanelItemArray;
                      var aItemsNumber: integer; opMode: integer): integer; StdCall; Export;
 begin
 {$IFDEF DEBUG}
@@ -99,7 +99,7 @@ begin
 {$ENDIF}
 end;
 
-procedure FreeFindData(Plugin: THandle; aPanelItems: PPluginPanelItemArr;
+procedure FreeFindData(Plugin: THandle; aPanelItems: PPluginPanelItemArray;
                        aItemsNumber: integer); StdCall; Export;
 begin
 {$IFDEF DEBUG}

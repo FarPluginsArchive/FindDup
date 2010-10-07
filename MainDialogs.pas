@@ -68,8 +68,8 @@ end;
 
 function TMainDialog.Show: Integer;
 var
-  items: PFarDialogItemArr;
-  pMyDlgProc: TFarApiWndProc;
+  items: PFarDialogItemArray;
+  pMyDlgProc: TFarApiWindowProc;
 const
 //  NulString: PChar = '';
   itemsnum=Ord(High(TMainDialogItemID))+1;

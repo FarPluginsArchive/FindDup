@@ -46,9 +46,9 @@ type
       constructor Create;
       destructor Destroy; Override;
       procedure GetOpenPluginInfo(var aInfo: TOpenPluginInfo);
-      function  GetFindData(var aPanelItems: PPluginPanelItemArr;
+      function  GetFindData(var aPanelItems: PPluginPanelItemArray;
                             var aItemsNumber: Integer; opMode: Integer): Integer;
-      procedure FreeFindData(aPanelItems: PPluginPanelItemArr;
+      procedure FreeFindData(aPanelItems: PPluginPanelItemArray;
                              aItemsNumber: integer);
       function ProcessEvent(aEvent: Integer; aParam: pointer): Integer;
       function ProcessKey(aKey: Integer; aControlState: UINT): Integer;
@@ -96,10 +96,10 @@ var
    ((ColumnTypes:        'N';
      ColumnWidths:       '0';
      ColumnTitles:       nil;
-     FullScreen:         False;
-     DetailedStatus:     True;
-     AlignExtensions:    False;
-     CaseConversion:     False;
+     FullScreen:         integer(False);
+     DetailedStatus:     integer(True);
+     AlignExtensions:    integer(False);
+     CaseConversion:     integer(False);
      StatusColumnTypes:  nil;
      StatusColumnWidths: nil)
    );
@@ -374,7 +374,7 @@ begin
      Result:=Integer(True);
 end;
 
-function TFarPlugin.GetFindData(var aPanelItems: PPluginPanelItemArr;
+function TFarPlugin.GetFindData(var aPanelItems: PPluginPanelItemArray;
                           var aItemsNumber: integer; opMode: integer): Integer;
 var
   I, J, Index, Gr: LongInt;
@@ -492,7 +492,7 @@ begin
 {$ENDIF UseExcept}
 end;
 
-procedure TFarPlugin.FreeFindData(aPanelItems: PPluginPanelItemArr;
+procedure TFarPlugin.FreeFindData(aPanelItems: PPluginPanelItemArray;
                                   aItemsNumber: integer);
 begin
   FreeMem(aPanelItems);
