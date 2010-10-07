@@ -22,6 +22,9 @@ type
   msgMode,
 
   msgFind,
+  msgFindChoise,
+  msgFindFiles,
+  msgFindDirs,
   msgFindAllDisks,
   msgFindAllDisksWithoutNet,
   msgFindCurrentDrive,

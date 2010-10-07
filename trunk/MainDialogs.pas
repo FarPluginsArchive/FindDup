@@ -25,11 +25,11 @@ Implementation
 
 const
   DialogWidth = 54;
-  DialogHeight = 14;
+  DialogHeight = 15;
 
 function SettingsDlgProc(hDlg: THandle; Msg: integer; Param1: integer; Param2: integer): integer; stdcall;
 const
-  BaseID = 4;
+  BaseID = 6;
 begin
   Result:=DefDlgProc(hDlg, Msg, Param1, Param2);
   case Msg of
@@ -58,19 +58,23 @@ var
   pMyDlgProc: TFarApiWndProc;
 const
 //  NulString: PChar = '';
-  itemsnum=11;
+  itemsnum=15;
   initarray: packed array [0..itemsnum-1] of TInitDialogItem = (
   (ItemType:DI_DOUBLEBOX;   X1: 3; Y1: 1; X2:DialogWidth-4; Y2:DialogHeight-2; Focus: 0; Selected: False; Flags:0; DefaultButton:False; Data: (MsgID: Cardinal(msgFind))),
-  (ItemType:DI_RADIOBUTTON; X1: 5; Y1: 2; X2: 0; Y2: 0; Focus: 0; Selected: True; Flags:DIF_GROUP; DefaultButton:False; Data: (MsgID: Cardinal(msgFindAllDisks))),
-  (ItemType:DI_RADIOBUTTON; X1: 5; Y1: 3; X2: 0; Y2: 0; Focus: 0; Selected: False; Flags:0; DefaultButton:False; Data: (MsgID: Cardinal(msgFindAllDisksWithoutNet))),
-  (ItemType:DI_RADIOBUTTON; X1: 5; Y1: 4; X2: 0; Y2: 0; Focus: 0; Selected: False; Flags:0; DefaultButton:False; Data: (MsgID: Cardinal(msgFindCurrentDrive))),
-  (ItemType:DI_RADIOBUTTON; X1: 5; Y1: 5; X2: 0; Y2: 0; Focus: 0; Selected: False; Flags:0; DefaultButton:False; Data: (MsgID: Cardinal(msgFindCheck))),
-  (ItemType:DI_CHECKBOX;    X1: 7; Y1: 6; X2: 0; Y2: 0; Focus: 0; Selected: False; Flags:DIF_DISABLE; DefaultButton:False; Data: (MsgID: Cardinal(msgFindCurrentPanel))),
-  (ItemType:DI_CHECKBOX;    X1: 7; Y1: 7; X2: 0; Y2: 0; Focus: 0; Selected: False; Flags:DIF_DISABLE; DefaultButton:False; Data: (MsgID: Cardinal(msgFindAnotherPanel))),
-  (ItemType:DI_CHECKBOX;    X1: 7; Y1: 8; X2: 0; Y2: 0; Focus: 0; Selected: False; Flags:DIF_DISABLE; DefaultButton:False; Data: (MsgID: Cardinal(msgFindLists))),
-  (ItemType:DI_BUTTON;      X1: 35; Y1: 8; X2: 0; Y2: 0; Focus: 0; Selected: False; Flags:DIF_DISABLE; DefaultButton:False; Data: (MsgID: Cardinal(msgEDIT))),
-  (ItemType:DI_TEXT;        X1: 0; Y1: 9; X2: 0; Y2: 9; Focus: 0; Selected: False; Flags:DIF_SEPARATOR; DefaultButton:False; Data: (Message: '')),
-  (ItemType:DI_BUTTON;      X1: 7; Y1: 10; X2: 0; Y2: 0; Focus: 0; Selected: False; Flags:0; DefaultButton:True; Data: (MsgID: Cardinal(msgOK)))
+  (ItemType:DI_TEXT;        X1: 5; Y1: 2; X2: 0; Y2: 0; Focus: 0; Selected: False; Flags:0; DefaultButton:False; Data: (MsgID: Cardinal(msgFindChoise))),
+  (ItemType:DI_RADIOBUTTON; X1: 15; Y1: 2; X2: 0; Y2: 0; Focus: 0; Selected: True; Flags:DIF_GROUP; DefaultButton:False; Data: (MsgID: Cardinal(msgFindFiles))),
+  (ItemType:DI_RADIOBUTTON; X1: 30; Y1: 2; X2: 0; Y2: 0; Focus: 0; Selected: False; Flags:0; DefaultButton:False; Data: (MsgID: Cardinal(msgFindDirs))),
+  (ItemType:DI_TEXT;        X1: 0; Y1: 3; X2: 0; Y2: 0; Focus: 0; Selected: False; Flags:DIF_SEPARATOR; DefaultButton:False; Data: (Message: '')),
+  (ItemType:DI_RADIOBUTTON; X1: 5; Y1: 4; X2: 0; Y2: 0; Focus: 0; Selected: True; Flags:DIF_GROUP; DefaultButton:False; Data: (MsgID: Cardinal(msgFindAllDisks))),
+  (ItemType:DI_RADIOBUTTON; X1: 5; Y1: 5; X2: 0; Y2: 0; Focus: 0; Selected: False; Flags:0; DefaultButton:False; Data: (MsgID: Cardinal(msgFindAllDisksWithoutNet))),
+  (ItemType:DI_RADIOBUTTON; X1: 5; Y1: 6; X2: 0; Y2: 0; Focus: 0; Selected: False; Flags:0; DefaultButton:False; Data: (MsgID: Cardinal(msgFindCurrentDrive))),
+  (ItemType:DI_RADIOBUTTON; X1: 5; Y1: 7; X2: 0; Y2: 0; Focus: 0; Selected: False; Flags:0; DefaultButton:False; Data: (MsgID: Cardinal(msgFindCheck))),
+  (ItemType:DI_CHECKBOX;    X1: 7; Y1: 8; X2: 0; Y2: 0; Focus: 0; Selected: False; Flags:DIF_DISABLE; DefaultButton:False; Data: (MsgID: Cardinal(msgFindCurrentPanel))),
+  (ItemType:DI_CHECKBOX;    X1: 7; Y1: 9; X2: 0; Y2: 0; Focus: 0; Selected: False; Flags:DIF_DISABLE; DefaultButton:False; Data: (MsgID: Cardinal(msgFindAnotherPanel))),
+  (ItemType:DI_CHECKBOX;    X1: 7; Y1: 10; X2: 0; Y2: 0; Focus: 0; Selected: False; Flags:DIF_DISABLE; DefaultButton:False; Data: (MsgID: Cardinal(msgFindLists))),
+  (ItemType:DI_BUTTON;      X1: 35; Y1: 10; X2: 0; Y2: 0; Focus: 0; Selected: False; Flags:DIF_DISABLE; DefaultButton:False; Data: (MsgID: Cardinal(msgEDIT))),
+  (ItemType:DI_TEXT;        X1: 0; Y1: 11; X2: 0; Y2: 0; Focus: 0; Selected: False; Flags:DIF_SEPARATOR; DefaultButton:False; Data: (Message: '')),
+  (ItemType:DI_BUTTON;      X1: 7; Y1: 12; X2: 0; Y2: 0; Focus: 0; Selected: False; Flags:0; DefaultButton:True; Data: (MsgID: Cardinal(msgOK)))
   );
 begin
 {$IFNDEF FPC}
