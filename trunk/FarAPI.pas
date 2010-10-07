@@ -47,11 +47,11 @@ procedure RestoreScreen(hScreen: THandle);
 function CmpName(const Pattern: PChar; const FileName: PChar;
                  SkipPath: BOOL): Bool;
 function Control(hPlugin: THandle; Command: integer; Param: pointer): integer;
-procedure InitDialogItems(Init: PInitDialogItemArr; Item: PFarDialogItemArr;
+procedure InitDialogItems(Init: PInitDialogItemArr; Item: PFarDialogItemArray;
                           ItemsNumber: integer);
 function DialogEx(X1, Y1: integer; X2, Y2: integer; HelpTopic: PChar;
-                  Items: PFarDialogItemArr; ItemsNumber: integer;
-                  Reserved: DWORD; Flags: DWORD; DlgProc: TFarApiWndProc;
+                  Items: PFarDialogItemArray; ItemsNumber: integer;
+                  Reserved: DWORD; Flags: DWORD; DlgProc: TFarApiWindowProc;
                   Param: integer): integer;
 function DefDlgProc(hDlg: THandle; Msg: integer; Param1: integer; Param2: integer): integer;
 function SendDlgMessage(hDlg: THandle; Msg: integer; Param1: integer; Param2: integer): integer;
@@ -111,7 +111,7 @@ end;
 function Message(Flags: DWORD; HelpTopic: PChar;
                  AItems: array of const; ButtonsNumber: Integer): Integer;
 var
-  Items: PPCharArr;
+  Items: PPCharArray;
   ItemsNumber: Integer;
   I: Integer;
 begin
@@ -152,7 +152,7 @@ end;
 function CmpName(const Pattern: PChar; const FileName: PChar;
                  SkipPath: BOOL): Bool;
 begin
-  Result:=Bool(PluginStartupInfo.CmpName(Pattern, FileName, SkipPath));
+  Result:=Bool(PluginStartupInfo.CmpName(Pattern, FileName, Integer(SkipPath)));
 end;
 
 function Control(hPlugin: THandle; Command: integer; Param: pointer): integer;
@@ -160,7 +160,7 @@ begin
      Result:=PluginStartupInfo.Control(hPlugin, Command, Param);
 end;
 
-procedure InitDialogItems(Init: PInitDialogItemArr; Item: PFarDialogItemArr;
+procedure InitDialogItems(Init: PInitDialogItemArr; Item: PFarDialogItemArray;
                           ItemsNumber: integer);
 var
   i: integer;
@@ -173,9 +173,9 @@ begin
     Item^[I].X2:=Init^[I].X2;
     Item^[I].Y2:=Init^[I].Y2;
     Item^[I].Focus:=Init^[I].Focus;
-    Item^[I].Param.Selected:=Init^[I].Selected;
+    Item^[I].Param.Selected:=Integer(Init^[I].Selected);
     Item^[I].Flags:=Init^[I].Flags;
-    Item^[I].DefaultButton:=Init^[I].DefaultButton;
+    Item^[I].DefaultButton:=Integer(Init^[I].DefaultButton);
     if Init^[I].Data.MsgID<2000 then
       StrCopy(Item^[I].Data.Data, GetMsg(TMessageStrings(Init^[I].Data.MsgID)))
     else
@@ -184,8 +184,8 @@ begin
 end;
 
 function DialogEx(X1, Y1: integer; X2, Y2: integer; HelpTopic: PChar;
-                  Items: PFarDialogItemArr; ItemsNumber: integer;
-                  Reserved: DWORD; Flags: DWORD; DlgProc: TFarApiWndProc;
+                  Items: PFarDialogItemArray; ItemsNumber: integer;
+                  Reserved: DWORD; Flags: DWORD; DlgProc: TFarApiWindowProc;
                   Param: integer): integer;
 begin
   Result:=PluginStartupInfo.DialogEx(PluginStartupInfo.ModuleNumber,
