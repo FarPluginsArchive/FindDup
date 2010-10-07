@@ -11,7 +11,9 @@ uses
     Windows,
     PluginLng,
     FarApi,
-    Plugin;
+    Plugin,
+    DebugLog,
+    SysUtils;
 
 type
   TMainDialog = class
@@ -23,36 +25,45 @@ type
 
 Implementation
 
+type
+  TMainDialogItemID = (idFrame, idProcessText, idProcessFiles, idProcessDirs, idSeparator1, idAllDisks, idWithoutNetDisks,
+                     idCurrentDisk, idCustom, idCurrentPanel, idAnotherPanel, idCustomList, idCustomListBtn, idSeparator2,
+		     idOKBtn);
 const
   DialogWidth = 54;
   DialogHeight = 15;
-
+  
 function SettingsDlgProc(hDlg: THandle; Msg: integer; Param1: integer; Param2: integer): integer; stdcall;
-const
-  BaseID = 8;
+//const
+//  BaseID = 8;
 begin
   Result:=DefDlgProc(hDlg, Msg, Param1, Param2);
   case Msg of
     DN_BTNCLICK:
-      if Param1=BaseID then
-        if SendDlgMessage(hDlg, DM_GETCHECK, BaseID, 0)=BSTATE_CHECKED then
+    case TMainDialogItemID(Param1) of
+      idCustom:
+        if SendDlgMessage(hDlg, DM_GETCHECK, Ord(idCustom), 0)=BSTATE_CHECKED then
           begin
-            SendDlgMessage(hDlg, DM_ENABLE, BaseID+1, Integer(True));
-            SendDlgMessage(hDlg, DM_ENABLE, BaseID+2, Integer(True));
-            SendDlgMessage(hDlg, DM_ENABLE, BaseID+3, Integer(True));
-            if SendDlgMessage(hDlg, DM_GETCHECK, BaseID+3, 0)=BSTATE_CHECKED then
-              SendDlgMessage(hDlg, DM_ENABLE, BaseID+4, Integer(True))
-	    else
-	      SendDlgMessage(hDlg, DM_ENABLE, BaseID+4, Integer(False));
+            SendDlgMessage(hDlg, DM_ENABLE, Ord(idCurrentPanel), Integer(True));
+            SendDlgMessage(hDlg, DM_ENABLE, Ord(idAnotherPanel), Integer(True));
+            SendDlgMessage(hDlg, DM_ENABLE, Ord(idCustomList), Integer(True));
+            if SendDlgMessage(hDlg, DM_GETCHECK, Ord(idCustomList), 0)=BSTATE_CHECKED then
+              SendDlgMessage(hDlg, DM_ENABLE, Ord(idCustomListBtn), Integer(True));
           end
         else
           begin
-            SendDlgMessage(hDlg, DM_ENABLE, BaseID+1, Integer(False));
-            SendDlgMessage(hDlg, DM_ENABLE, BaseID+2, Integer(False));
-            SendDlgMessage(hDlg, DM_ENABLE, BaseID+3, Integer(False));
-            SendDlgMessage(hDlg, DM_ENABLE, BaseID+4, Integer(False));
+            SendDlgMessage(hDlg, DM_ENABLE, Ord(idCurrentPanel), Integer(False));
+            SendDlgMessage(hDlg, DM_ENABLE, Ord(idAnotherPanel), Integer(False));
+            SendDlgMessage(hDlg, DM_ENABLE, Ord(idCustomList), Integer(False));
+            SendDlgMessage(hDlg, DM_ENABLE, Ord(idCustomListBtn), Integer(False));
           end;
-  end;
+      idCustomList:
+         if SendDlgMessage(hDlg, DM_GETCHECK, Ord(idCustomList), 0)=BSTATE_CHECKED then   
+           SendDlgMessage(hDlg, DM_ENABLE, Ord(idCustomListBtn), Integer(True))              
+	 else
+	   SendDlgMessage(hDlg, DM_ENABLE, Ord(idCustomListBtn), Integer(False));
+      end;
+    end;
 end;
 
 function TMainDialog.Show: Integer;
@@ -61,7 +72,7 @@ var
   pMyDlgProc: TFarApiWndProc;
 const
 //  NulString: PChar = '';
-  itemsnum=15;
+  itemsnum=Ord(High(TMainDialogItemID))+1;
   initarray: packed array [0..itemsnum-1] of TInitDialogItem = (
   (ItemType:DI_DOUBLEBOX;   X1: 3; Y1: 1; X2:DialogWidth-4; Y2:DialogHeight-2; Focus: 0; Selected: False; Flags:0; DefaultButton:False; Data: (MsgID: Cardinal(msgFind))),
   (ItemType:DI_TEXT;        X1: 5; Y1: 2; X2: 0; Y2: 0; Focus: 0; Selected: False; Flags:0; DefaultButton:False; Data: (MsgID: Cardinal(msgFindChoise))),
