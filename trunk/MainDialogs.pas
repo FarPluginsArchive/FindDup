@@ -29,7 +29,7 @@ const
 
 function SettingsDlgProc(hDlg: THandle; Msg: integer; Param1: integer; Param2: integer): integer; stdcall;
 const
-  BaseID = 6;
+  BaseID = 8;
 begin
   Result:=DefDlgProc(hDlg, Msg, Param1, Param2);
   case Msg of
@@ -40,7 +40,10 @@ begin
             SendDlgMessage(hDlg, DM_ENABLE, BaseID+1, Integer(True));
             SendDlgMessage(hDlg, DM_ENABLE, BaseID+2, Integer(True));
             SendDlgMessage(hDlg, DM_ENABLE, BaseID+3, Integer(True));
-            SendDlgMessage(hDlg, DM_ENABLE, BaseID+4, Integer(True));
+            if SendDlgMessage(hDlg, DM_GETCHECK, BaseID+3, 0)=BSTATE_CHECKED then
+              SendDlgMessage(hDlg, DM_ENABLE, BaseID+4, Integer(True))
+	    else
+	      SendDlgMessage(hDlg, DM_ENABLE, BaseID+4, Integer(False));
           end
         else
           begin
