@@ -11,13 +11,12 @@ uses
     Windows,
     PluginLng,
     FarApi,
-    Plugin,
-    DebugLog,
-    SysUtils;
+    Plugin;
 
 type
   TMainDialog = class
   private
+    class function DlgProc(hDlg: THandle; Msg: integer; Param1: integer; Param2: integer): integer; stdcall; static;
   public
     function Show: Integer;
   end;
@@ -33,9 +32,7 @@ const
   DialogWidth = 54;
   DialogHeight = 15;
   
-function SettingsDlgProc(hDlg: THandle; Msg: integer; Param1: integer; Param2: integer): integer; stdcall;
-//const
-//  BaseID = 8;
+class function TMainDialog.DlgProc(hDlg: THandle; Msg: integer; Param1: integer; Param2: integer): integer;
 begin
   Result:=DefDlgProc(hDlg, Msg, Param1, Param2);
   case Msg of
@@ -69,9 +66,7 @@ end;
 function TMainDialog.Show: Integer;
 var
   items: PFarDialogItemArray;
-  pMyDlgProc: TFarApiWindowProc;
 const
-//  NulString: PChar = '';
   itemsnum=Ord(High(TMainDialogItemID))+1;
   initarray: packed array [0..itemsnum-1] of TInitDialogItem = (
   (ItemType:DI_DOUBLEBOX;   X1: 3; Y1: 1; X2:DialogWidth-4; Y2:DialogHeight-2; Focus: 0; Selected: False; Flags:0; DefaultButton:False; Data: (MsgID: Cardinal(msgFind))),
@@ -91,18 +86,12 @@ const
   (ItemType:DI_BUTTON;      X1: 7; Y1: 12; X2: 0; Y2: 0; Focus: 0; Selected: False; Flags:0; DefaultButton:True; Data: (MsgID: Cardinal(msgOK)))
   );
 begin
-{$IFNDEF FPC}
-  pMyDlgProc:=SettingsDlgProc;
-{$ELSE}
-  pMyDlgProc:=@SettingsDlgProc;
-{$ENDIF}
   GetMem(items, SizeOf(TFarDialogItem)*itemsnum);
   ZeroMemory(items, SizeOf(TFarDialogItem)*itemsnum);
   InitDialogItems(@initarray, items, itemsnum);
   Result:=DialogEx(-1,-1, DialogWidth, DialogHeight,
-                   'Config', items, itemsnum, 0, 0, pMyDlgProc, 0);
+                   'Config', items, itemsnum, 0, 0, @TMainDialog.DlgProc, 0);
   FreeMem(items);
-//  Result:=-1;
 end;
 
 End.
