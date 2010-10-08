@@ -411,7 +411,7 @@ begin
 {$ENDIF FullRescan}
               FFlagStop:=False;
               FFlagPressBreak:=False;
-{$IFDEF VALIDATE}
+{$IFDEF AUTO_VALIDATE}
 {$IFDEF DEBUG}
      AddDebugStringToLog('Enter to "FFileGroupList.Validate"', 2);
 {$ENDIF}
@@ -422,7 +422,7 @@ begin
      AddDebugStringToLog('Exit to "FFileGroupList.Validate"', -2);
 {$ENDIF}
 
-{$ELSE VALIDATE}
+{$ELSE AUTO_VALIDATE}
 
 {$IFDEF DEBUG}
      AddDebugStringToLog('Enter to "FFileGroupList.Pack"', 2);
@@ -433,7 +433,7 @@ begin
      AddDebugStringToLog('Exit to "FFileGroupList.Pack"', -2);
 {$ENDIF}
 
-{$ENDIF VALIDATE}
+{$ENDIF AUTO_VALIDATE}
 
               Result:=Integer(True);
 {$IFDEF FullRescan}
@@ -575,7 +575,7 @@ begin
     Result:=Integer(True);
   end;
 
-{$IFNDEF VALIDATE}
+{$IFNDEF _VALIDATE}
   {при перемещении файла: скрываем текущую позицию и возвращаем обработку FAR}
   if (aControlState=0) and (aKey=VK_F6) then
   begin
@@ -598,6 +598,16 @@ begin
     Control(THandle(self), FCTL_REDRAWPANEL, nil);
     Result:=Integer(True);
   end;
+
+{$IFDEF VALIDATE}
+  if (aControlState=PKF_CONTROL) and (aKey=Ord('R')) then
+  begin
+    FFileGroupList.Validate;
+    Control(THandle(self), FCTL_UPDATEPANEL, nil);
+    Control(THandle(self), FCTL_REDRAWPANEL, nil);
+    Result:=Integer(True);
+  end;
+{$ENDIF VALIDATE}
 
   if (aControlState=PKF_SHIFT or PKF_ALT) and (aKey=VK_F1) then
   begin
