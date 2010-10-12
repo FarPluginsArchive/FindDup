@@ -540,9 +540,7 @@ begin
   Result:=False;
   FFileAttributes:=GetFileAttributes(FFileName);
   if FFileAttributes<>INVALID_HANDLE_VALUE then
-    begin
-      Result:=True;
-    end
+    Result:=True
   else
     Include(FFlags, flDeleted);
 end;
