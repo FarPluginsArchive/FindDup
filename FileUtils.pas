@@ -191,7 +191,7 @@ begin
   with Items[I] do
   begin
     Delete(J);
-    if not (flShowUnGroupped in FFlags) then
+    if not (flShowUnGroupped in FFlags) then // !!!похоже это лишнее, ибо , если показываем без групп, то сюда мы и не попадём.
       Dec(FGroupedFilesCount);
   end;
 end;
