@@ -15,9 +15,16 @@ uses
     Plugin;
 
 type
-  TMainDialog = class
+//  TInitDialogItemArray = array of TInitDialogItem;
+  TFARDialog = class
   private
-    class function DlgProc(hDlg: THandle; Msg: integer; Param1: integer; Param2: integer): integer; stdcall; static;
+    class function ClassDlgProc(hDlg: THandle; Msg: integer; Param1: integer; Param2: integer): integer; stdcall; static;
+    function DlgProc(hDlg: THandle; Msg: integer; Param1: integer; Param2: integer): integer; virtual; abstract;
+  end;
+
+  TMainDialog = class(TFARDialog)
+  private
+    function DlgProc(hDlg: THandle; Msg: integer; Param1: integer; Param2: integer): integer; override;
   public
     function Show: Integer;
   end;
@@ -33,7 +40,21 @@ const
   DialogWidth = 54;
   DialogHeight = 15;
   
-class function TMainDialog.DlgProc(hDlg: THandle; Msg: integer; Param1: integer; Param2: integer): integer;
+
+class function TFARDialog.ClassDlgProc(hDlg: THandle; Msg: integer; Param1: integer; Param2: integer): integer; stdcall; static;
+  var
+    vDialog :TFARDialog;
+begin
+  if Msg = DN_INITDIALOG then
+    FARAPI.SendDlgMessage(hDlg, DM_SETDLGDATA, 0, Param2)
+  else
+    begin
+      vDialog := TFARDialog(FARAPI.SendDlgMessage(hDlg, DM_GETDLGDATA, 0, 0));
+      Result := vDialog.DlgProc(hDlg, Msg, Param1, Param2);
+    end;
+end;
+
+function TMainDialog.DlgProc(hDlg: THandle; Msg: integer; Param1: integer; Param2: integer): integer;
 begin
   Result:=DefDlgProc(hDlg, Msg, Param1, Param2);
   case Msg of
@@ -91,7 +112,7 @@ begin
   ZeroMemory(items, SizeOf(TFarDialogItem)*itemsnum);
   InitDialogItems(@initarray, items, itemsnum);
   Result:=DialogEx(-1,-1, DialogWidth, DialogHeight,
-                   'Config', items, itemsnum, 0, 0, @TMainDialog.DlgProc, PtrInt(Self));
+                   'Config', items, itemsnum, 0, 0, @TFARDialog.ClassDlgProc, PtrInt(Self));
   FreeMem(items);
 end;
 
