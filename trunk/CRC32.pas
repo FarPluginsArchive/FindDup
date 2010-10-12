@@ -1,6 +1,7 @@
 unit CRC32;
 
 interface
+{$I PRJDefines.inc}
 {$IFDEF VPASCAL}
 uses
   Windows;

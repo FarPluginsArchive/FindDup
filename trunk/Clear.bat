@@ -4,3 +4,4 @@ del *.res
 del *.or
 del *.dcu
 del *.~*
+del *.obj

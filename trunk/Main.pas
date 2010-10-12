@@ -563,8 +563,6 @@ end;
 
 function TFarPlugin.ProcessKey(aKey: Integer; aControlState: UINT): Integer;
 begin
-
-
   {скрытие: скрываем текущую позицию и прерываем обработку}
   Result:=Integer(False);
   if (aControlState=0) and (aKey=VK_F7) then

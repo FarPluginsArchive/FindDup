@@ -163,7 +163,7 @@ begin
      inherited Items[Index]:=Item;
 end;
 
-function TFileSystemObjectList.Add;
+function TFileSystemObjectList.Add(aObject: TFileSystemObject): Integer;
 begin
      Result:=inherited Add(pointer(aObject));
      aObject.IncRef;
