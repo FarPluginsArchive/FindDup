@@ -87,7 +87,7 @@ begin
 }
 end;
 
-procedure SetStartupInfo(var aInfo: TPluginStartupInfo); {stdcall;}
+procedure SetStartupInfo(var aInfo: TPluginStartupInfo); stdcall;
 var
    Size: Integer;
 begin

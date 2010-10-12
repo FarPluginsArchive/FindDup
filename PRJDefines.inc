@@ -42,6 +42,7 @@
   {$ELSE}
      {$ALIGN OFF}
      {$MINENUMSIZE 4}
+     {$R-}
 
      {$WRITEABLECONST ON}
 

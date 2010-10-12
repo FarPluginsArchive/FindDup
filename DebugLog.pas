@@ -8,6 +8,7 @@ unit DebugLog;
 
 
 interface
+{$I PRJDefines.inc}
   procedure AddDebugStringToLog(aSt: String; aSpace: Integer);
 
 implementation

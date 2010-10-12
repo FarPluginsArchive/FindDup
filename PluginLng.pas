@@ -7,6 +7,7 @@
 unit PluginLng;
 
 interface
+{$I PRJDefines.inc}
 type
   TMessageStrings = (
   msgOK,

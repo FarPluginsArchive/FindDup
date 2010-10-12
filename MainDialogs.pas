@@ -7,6 +7,7 @@
 unit MainDialogs;
 
 Interface
+{$I PRJDefines.inc}
 uses
     Windows,
     PluginLng,
@@ -90,7 +91,7 @@ begin
   ZeroMemory(items, SizeOf(TFarDialogItem)*itemsnum);
   InitDialogItems(@initarray, items, itemsnum);
   Result:=DialogEx(-1,-1, DialogWidth, DialogHeight,
-                   'Config', items, itemsnum, 0, 0, @TMainDialog.DlgProc, 0);
+                   'Config', items, itemsnum, 0, 0, @TMainDialog.DlgProc, PtrInt(Self));
   FreeMem(items);
 end;
 

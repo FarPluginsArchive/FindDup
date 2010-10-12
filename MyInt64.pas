@@ -5,7 +5,7 @@
 }
 
 unit MyInt64;
-
+{$I PRJDefines.inc}
 interface
 type
   INT64 = Comp;
