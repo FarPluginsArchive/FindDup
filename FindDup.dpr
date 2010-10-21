@@ -8,32 +8,22 @@
 library FindDup;
 {.$O-}
 {$I PRJDefines.inc}
-{.$DEFINE DEBUG}
-{$IFNDEF VPASCAL}
-  {$APPTYPE CONSOLE}
-{$ENDIF}
+{$APPTYPE CONSOLE}
 
 uses
 {$IFDEF DEBUG}
   DebugLog,
 {$ENDIF}
-{$IFNDEF OLD_PAS}
-  {$IFDEF DELPHI}
-//  FastMemory,
-  {$ENDIF}
-{$ENDIF}
   Windows,
   Plugin,
   Main,
   FarApi,
-//  DiscUtils,
   SysUtils;
 
 {$R *.res}
 
 var
   StartDir: array[1..MAX_PATH] of Char;
-//  flPlugOpen: Boolean;
 
 function OpenPlugin(OpenFrom: integer{TOpenModes}; Item: integer): THandle; StdCall; Export;
 begin
@@ -43,7 +33,6 @@ begin
      try
        Result:=THandle(TFarPlugin.Create);
        GetCurrentDirectory(MAX_PATH, @StartDir);
-//       flPlugOpen:=True;
      except
        Result:=INVALID_HANDLE_VALUE;
      end;
@@ -58,15 +47,9 @@ begin
 {$IFDEF DEBUG}
      AddDebugStringToLog('Enter to "ClosePlugin"', 2);
 {$ENDIF}
-//    flPlugOpen:=False;
     try
       TFarPlugin(Plugin).Free;
     finally
-{
-      FastMemory_SetAutoDecommit(False);
-      FastMemory_Decommit;
-      FastMemory_SetAutoDecommit(True);
-}
       Control(INVALID_HANDLE_VALUE, FCTL_SETPANELDIR, @StartDir);
     end;
 {$IFDEF DEBUG}

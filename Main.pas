@@ -129,9 +129,6 @@ var
   FindData: TWin32FindData;
   I: Integer;
   Found: Bool;
-{$IFDEF VPASCAL}
-  St: String;
-{$ENDIF}
 begin
   if Assigned(FExcludeDirMasks) then
   begin
@@ -143,12 +140,7 @@ begin
     if I<>FExcludeDirMasks.Count then Exit;
   end;
 
-{$IFNDEF VPASCAL}
   hFindFile:=FindFirstFile(PChar(Cat+'*'), FindData);
-{$ELSE}
-  St:=Cat+'*'+#0;
-  hFindFile:=FindFirstFile(PChar(@St[1]), FindData);
-{$ENDIF}
   if hFindFile<>INVALID_HANDLE_VALUE then
     begin
       Found:=True;
@@ -204,9 +196,6 @@ var
   I: Integer;
   Found: Bool;
   tmpDirectoryObject: TDirectoryObject;
-{$IFDEF VPASCAL}
-  St: String;
-{$ENDIF}
 begin
   Result:=nil;
 
@@ -227,12 +216,7 @@ begin
 }
 
   SetLastError(0);
-{$IFNDEF VPASCAL}
   hFindFile:=FindFirstFile(PChar(Cat+'*'), FindData);
-{$ELSE}
-  St:=Cat+'*'+#0;
-  hFindFile:=FindFirstFile(PChar(@St[1]), FindData);
-{$ENDIF}
   if GetLastError=0 then
     begin
       if hFindFile<>INVALID_HANDLE_VALUE then
@@ -304,7 +288,6 @@ var
    Index: Byte;
    RootDirectory: String;
    I: LongInt;
-//   tmpStr: array[0..MAX_PATH] of Char;
 begin
      if FileExists(GetPluginPath+'exclude.txt') then
        begin
@@ -330,12 +313,9 @@ begin
          if FSearchPaths.Count>0 then
          for I:=0 to FSearchPaths.Count-1 do
          begin
-//           ConvertNameToReal(PChar(FSearchPaths[I]), @tmpStr, SizeOf(tmpStr));
            if FileExists(GetPluginPath+'FindDupDir.flg') then
-//             FindDupDir(StrPas(@tmpStr))
              FindDupDir(PChar(FSearchPaths[I]))
            else
-//             FindDupFile(StrPas(@tmpStr));
              FindDupFile(PChar(FSearchPaths[I]));
          end;
          FSearchPaths.Free;
@@ -512,7 +492,6 @@ begin
   Result:=Integer(False);
   case aEvent of
     FE_BREAK: FFlagPressBreak:=True;
-//    FE_IDLE: QMemDecommitOverstock;
 {
     FE_REDRAW: begin
       if not FFlagInProcess then
@@ -573,7 +552,6 @@ begin
     Result:=Integer(True);
   end;
 
-{$IFNDEF _VALIDATE}
   {при перемещении файла: скрываем текущую позицию и возвращаем обработку FAR}
   if (aControlState=0) and (aKey=VK_F6) then
   begin
@@ -587,7 +565,6 @@ begin
     ProcessRemoveKey;
     Result:=Integer(False);
   end;
-{$ENDIF VALIDATE}
 
   if (aControlState=PKF_SHIFT or PKF_ALT) and (aKey=VK_F3) then
   begin

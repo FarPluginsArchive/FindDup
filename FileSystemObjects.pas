@@ -25,9 +25,6 @@ uses
 {$IFDEF CRC32}
     CRC32,
 {$ENDIF}
-{$IFDEF OLD_PAS}
-    MyInt64,
-{$ENDIF}
     Windows,
     SysUtils;
 
@@ -55,7 +52,7 @@ type
     procedure SetItems(Index: Integer; Item: TFileSystemObject);
   public
     constructor Create;
-    destructor Destroy; override;
+//    destructor Destroy; override;
     function Add(aObject: TFileSystemObject): Integer;
     {Идентичен ли объект уже содержащимся в контейнере? (сравнение с первым элементом в контейнере)}
     function IsDuplicate(aObject: TFileSystemObject): Boolean;
@@ -63,12 +60,12 @@ type
      затем циклически сравниваем
      !!!а что если 2 файла с одинаковым размером??? - ошибка!!!}
     function Compare(aObject: TFileSystemObjectList; aFlags: TCompareFlags): Integer;
-    procedure Clear; {$IFNDEF OLD_PAS} override; {$ENDIF}
+    procedure Clear; override;
     procedure Delete(Index: Integer);
     {сортирует элементы по размеру}
     procedure Sort;
 //    procedure SaveToFile(aFileStream: TFileStream);
-    property Items[Index: Integer]: TFileSystemObject read GetItems write SetItems;{$IFNDEF OLD_PAS} default; {$ENDIF}
+    property Items[Index: Integer]: TFileSystemObject read GetItems write SetItems; default;
     property Flags: TGroupFlags read FFlags write FFlags;
   end;
 
@@ -143,16 +140,12 @@ begin
      inherited Create;
      FFlags:=[];
 end;
-
+{
 destructor TFileSystemObjectList.Destroy;
 begin
-{$IFDEF OLD_PAS}
-     Clear;
-{$ELSE}
      inherited Destroy;
-{$ENDIF}
 end;
-
+}
 function TFileSystemObjectList.GetItems(Index: Integer): TFileSystemObject;
 begin
      Result:=TFileSystemObject(inherited Items[Index]);
@@ -555,11 +548,7 @@ begin
       Inc((aObject as TDirectoryObject).FLinksCount);
 }
     FDirectoryList.Add(aObject);
-{$IFNDEF OLD_PAS}
     Inc(FDirectorySize, aObject.FFileSize);
-{$ELSE}
-    IncInt64(FDirectorySize, aObject.FFileSize);
-{$ENDIF}
   end;
 end;
 

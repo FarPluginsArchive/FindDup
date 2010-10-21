@@ -2,12 +2,6 @@ unit CRC32;
 
 interface
 {$I PRJDefines.inc}
-{$IFDEF VPASCAL}
-uses
-  Windows;
-type
-  LongWord = DWORD;
-{$ENDIF}
   function Crc32File(const FileName: string): LongWord;
 
 implementation
@@ -23,13 +17,8 @@ Const
 Var
   CRC32Table: array [Byte] of Cardinal;
 
-function  Crc32Next   (Crc32Current: LongWord; const Data; Count: LongWord): LongWord; {$IFNDEF VPASCAL} register; {$ELSE} assembler;{$FRAME-} {$ENDIF}
+function  Crc32Next   (Crc32Current: LongWord; const Data; Count: LongWord): LongWord; register;
 Asm //EAX - CRC32Current; EDX - Data; ECX - Count
-{$IFDEF VPASCAL}
-  mov eax, CRC32Current
-  mov edx, Data
-  mov ecx, Count
-{$ENDIF}
   test  ecx, ecx
   jz    @@EXIT
   PUSH  ESI
@@ -48,15 +37,12 @@ Asm //EAX - CRC32Current; EDX - Data; ECX - Count
 @@EXIT:
 end;//Crc32Next
 
-function  Crc32Done   (Crc32: LongWord): LongWord; {$IFNDEF VPASCAL} register; {$ELSE} assembler; {$FRAME-} {$ENDIF}
+function  Crc32Done   (Crc32: LongWord): LongWord; register;
 Asm
-{$IFDEF VPASCAL}
-  mov eax, Crc32
-{$ENDIF}
   NOT   EAX
 end;//Crc32Done
 
-function  Crc32Initialization: Pointer; {$IFDEF VPASCAL} assembler; {$FRAME-} {$ENDIF}
+function  Crc32Initialization: Pointer;
 Asm
   push    EDI
   STD
