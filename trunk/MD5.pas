@@ -15,9 +15,6 @@ unit md5;
 
 interface
 uses
-{$IFDEF OLD_PAS}
-    Windows,
-{$ENDIF}
     SysUtils,
     Classes;
 
@@ -96,9 +93,6 @@ documentation and/or software.
 
 
 type
-{$IFDEF OLD_PAS}
-  LongWord=DWORD;
-{$ENDIF}
   UINT4 = LongWord;
 
  PArray4UINT4 = ^TArray4UINT4;

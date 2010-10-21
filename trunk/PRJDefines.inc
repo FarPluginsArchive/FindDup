@@ -12,30 +12,15 @@
  если предыдущая операция поиска прервана пользователем} 
 {.$DEFINE FullRescan}
 
+{$DEFINE VALIDATE} 
 {если определена - проверка доступности всех элементов списка, 
  иначе - перехват клавиш F6, F8 - со скрытием элементов списка}
-{$DEFINE VALIDATE} 
+{.$DIFINE AUTO_VALIDATE}
 
 {$IFDEF DEBUG}
   {$O-}
 {$ENDIF DEBUF}                    
 
-{$IFNDEF VPASCAL}
-  {$IFNDEF FPC}
-    {$DEFINE DELPHI}
-    {$IFDEF VER100}
-      {$DEFINE OLD_PAS}
-    {$ENDIF}
-  {$ENDIF}
-{$ENDIF}
-
-{$IFDEF VIRTUALPASCAL}
-
-  {$DEFINE OLD_PAS}
-//  {$DEFINE VP}
-  {&Delphi+,AlignData+,AlignRec+,H+,Z+,Use32+}
-
-{$ELSE}
   {$IFDEF FPC}
     {$MODE DELPHI}
     {$DEFINE USE_DELPHI4}   { Delphi 4.0 or higher }
@@ -58,4 +43,3 @@
       {$ENDIF}
      {$ENDIF}
   {$ENDIF}
-{$ENDIF}

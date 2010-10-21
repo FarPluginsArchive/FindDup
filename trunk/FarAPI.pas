@@ -206,25 +206,18 @@ end;
 
 function CheckForEsc: Boolean;
 var
-//   hConInp: THandle;
    Rec: TInputRecord;
    ReadCount: DWord;
 begin
   Result:=False;
-//  hConInp:=GetStdHandle(STD_INPUT_HANDLE);
   repeat
     PeekConsoleInput(hConInp, rec, 1, ReadCount);
     if ReadCount>0 then
     begin
       ReadConsoleInput(hConInp, rec, 1, ReadCount);
       if (Rec.EventType=KEY_EVENT) and
-{$IFNDEF OLD_PAS}
          (Rec.Event.KeyEvent.wVirtualKeyCode=VK_ESCAPE) and
          (Rec.Event.KeyEvent.bKeyDown) then
-{$ELSE}
-         (Rec.KeyEvent.wVirtualKeyCode=VK_ESCAPE) and
-         (Rec.KeyEvent.bKeyDown) then
-{$ENDIF}
       Result:=True;
     end
   until ReadCount=0;
@@ -269,6 +262,4 @@ end;
 }
 initialization
   hConInp:=GetStdHandle(STD_INPUT_HANDLE);
-//finalization
-//  CloseHandle(hConInp);
 End.

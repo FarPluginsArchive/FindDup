@@ -40,11 +40,11 @@ type
 }
     property GroupsCount: Integer read GetGroupsCount;
     property GroupedFilesCount: Integer read GetGroupedFilesCount;
-    property Items[Index: Integer]: TFileSystemObjectList read GetItems{ write SetItems}; {$IFNDEF VPASCAL} default; {$ENDIF}
+    property Items[Index: Integer]: TFileSystemObjectList read GetItems{ write SetItems}; default;
     constructor Create;
     destructor Destroy; override;
     function Add(aFileObj: TFileSystemObject): Integer;
-    procedure Clear; {$IFNDEF OLD_PAS} override; {$ENDIF}
+    procedure Clear; override;
     procedure DeleteFileByIndex(I, J: Integer);
     procedure Delete(Index: Integer);
 {$IFDEF VALIDATE}
@@ -57,22 +57,7 @@ type
 {$ENDIF}
   end;
 
-{$IFDEF VER100}
-  procedure FreeAndNil(var Obj);
-{$ENDIF}
-
 implementation
-
-{$IFDEF VER100}
-procedure FreeAndNil(var Obj);
-var
-  Temp: TObject;
-begin
-  Temp := TObject(Obj);
-  Pointer(Obj) := nil;
-  Temp.Free;
-end;
-{$ENDIF}
 
 {реализация TFileGroupList}
 
@@ -116,11 +101,7 @@ end;
 destructor TFileGroupList.Destroy;
 begin
      FreeAndNil(FUnGrpFileList);
-{$IFDEF OLD_PAS}
-     Clear;
-{$ELSE}
      inherited Destroy;
-{$ENDIF}
 end;
 
 function TFileGroupList.Add;
