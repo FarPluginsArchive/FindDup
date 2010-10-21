@@ -468,13 +468,13 @@ begin
 end;
 }
 {$IFDEF VALIDATE}
+// конечно такая проверка не корректна, ведь файл могли не только изменить,
+// но и отредактировать
 function TFileObject.IsValid: Boolean;
 var
    AttributeData: TWin32FileAttributeData;
-//   hFindFile: THandle;
 begin
   Result:=False;
-//GetFileExMaxInfoLevel, GetFileExInfoStandard
   if GetFileAttributesEx(FFileName, GetFileExInfoStandard, @AttributeData) then
     Result:=True
   else
