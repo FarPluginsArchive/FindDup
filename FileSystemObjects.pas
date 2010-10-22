@@ -7,13 +7,6 @@
 unit FileSystemObjects;
 
 {$I PRJDefines.inc}
-{$DEFINE MD5}
-{.$DEFINE CRC32}
-{$IFNDEF MD5}
-  {$IFNDEF CRC32}
-    {$DEFINE CMPDIRECT}
-  {$ENDIF}
-{$ENDIF}
 
 interface
 
