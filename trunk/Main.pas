@@ -13,6 +13,9 @@ uses
 {$IFDEF DEBUG}
     DebugLog, 
 {$ENDIF}
+{$IFDEF DIALOGS}
+    MainDialogs,
+{$ENDIF}
     Windows,
     Classes,
     SysUtils,
@@ -20,8 +23,7 @@ uses
     FarAPI,
     PluginLng,
     FileUtils,
-    FileSystemObjects,
-    MainDialogs;
+    FileSystemObjects;
 
 const
      PPIF_GROUP = 1;
@@ -29,7 +31,9 @@ const
 type
     TFarPlugin = class
     private
+{$IFDEF DIALOGS}
       FMainDialog: TMainDialog;
+{$ENDIF}
 //      FCurrentPanelItem: Integer;
       FFileGroupList: TFileGroupList;
       FFlagStop: Boolean;
@@ -584,6 +588,7 @@ begin
   end;
 {$ENDIF VALIDATE}
 
+{$IFDEF DIALOGS}
   if (aControlState=PKF_SHIFT or PKF_ALT) and (aKey=VK_F1) then
   begin
     FMainDialog:=TMainDialog.Create;
@@ -591,6 +596,7 @@ begin
     FMainDialog.Free;
     Result:=Integer(True);
   end;
+{$ENDIF}
 {
   if (aControlState=(PKF_CONTROL or PKF_ALT)) and (aKey=Ord('Q')) then
   begin
