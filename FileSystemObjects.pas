@@ -83,7 +83,7 @@ type
     function Compare(aObject: TFileSystemObject; aFlags: TCompareFlags): Integer; virtual; abstract;
     {проверка: существует ли еще файл, и обновление его данных}
 {$IFDEF VALIDATE}
-    function IsValid: Boolean; virtual; abstract;
+    function IsValid: Boolean; (*virtual; abstract;*)
 {$ENDIF}
     procedure GetFileSystemRecord(var aFileSystemRecord
       {$IFDEF CONTROL_TYPE}: TWin32FindData{$ENDIF});
@@ -104,9 +104,11 @@ type
 {$ENDIF}
   public
     function Compare(aObject: TFileSystemObject; aFlags: TCompareFlags): Integer; override;
+(*
 {$IFDEF VALIDATE}
     function IsValid: Boolean; override;
 {$ENDIF}
+*)
   end;
 
   TDirectoryObject = class(TFileSystemObject)
@@ -116,9 +118,11 @@ type
     constructor Create(aFileSystemRecord: TWin32FindData);
     destructor Destroy; override;
     function Compare(aObject: TFileSystemObject; aFlags: TCompareFlags): Integer; override;
+(*
 {$IFDEF VALIDATE}
     function IsValid: Boolean; override;
 {$ENDIF}
+*)
     procedure AddMember(aObject: TFileSystemObject);
 //    procedure Free; override;
   end;
@@ -304,6 +308,20 @@ begin
       Result:=-1;
 end;
 
+{$IFDEF VALIDATE}
+function TFileSystemObject.IsValid: Boolean;
+// конечно такая проверка не корректна, ведь файл могли не только изменить,
+// но и отредактировать
+begin
+  Result:=False;
+  FFileAttributes:=GetFileAttributes(FFileName);
+  if FFileAttributes<>INVALID_HANDLE_VALUE then
+    Result:=True
+  else
+    Include(FFlags, flDeleted);
+end;
+{$ENDIF}
+
 // реализация TFileObject
 
 {$IFDEF MD5}
@@ -456,6 +474,7 @@ begin
     Include(FFlags, flDeleted);
 end;
 }
+(*
 {$IFDEF VALIDATE}
 // конечно такая проверка не корректна, ведь файл могли не только изменить,
 // но и отредактировать
@@ -470,7 +489,7 @@ begin
     Include(FFlags, flDeleted);
 end;
 {$ENDIF}
-
+*)
 
 // реализация TDirectoryObject
 
@@ -487,17 +506,7 @@ begin
   FDirectoryList.Free;
   inherited Destroy;
 end;
-{
-procedure TDirectoryObject.Free;
-begin
-  if FLinksCount=0 then
-    begin
-      inherited Free;
-    end
-  else
-    Dec(FLinksCount);
-end;
-}
+
 function TDirectoryObject.Compare(aObject: TFileSystemObject; aFlags: TCompareFlags): Integer;
 begin
   if Self<>aObject then
@@ -516,6 +525,7 @@ begin
     Result:=0;
 end;
 
+(*
 {$IFDEF VALIDATE}
 function TDirectoryObject.IsValid: Boolean;
 begin
@@ -527,6 +537,7 @@ begin
     Include(FFlags, flDeleted);
 end;
 {$ENDIF}
+*)
 
 procedure TDirectoryObject.AddMember(aObject: TFileSystemObject);
 begin
