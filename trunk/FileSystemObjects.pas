@@ -69,7 +69,7 @@ type
     FCreationTime: TFileTime;
     FLastAccessTime: TFileTime;
     FLastWriteTime: TFileTime;
-    FFileSize: INT64;
+    FSize: INT64;
     FFileName: PChar;
     FFlags: TFileSystemFlags;
     function CompInt(aInt1, aInt2: Int64): Integer;
@@ -111,7 +111,6 @@ type
 
   TDirectoryObject = class(TFileSystemObject)
   private
-    FDirectorySize: INT64;
     FDirectoryList: TFileSystemObjectList;
   public
     constructor Create(aFileSystemRecord: TWin32FindData);
@@ -264,8 +263,6 @@ begin
 end;
 
 procedure TFileSystemObject.SetFileSystemRecord(const aFileSystemRecord: TWin32FindData);
-var
-  tmpFileSize: INT64;
 begin
   with aFileSystemRecord do
   begin
@@ -273,9 +270,8 @@ begin
     FCreationTime:=ftCreationTime;
     FLastAccessTime:=ftLastAccessTime;
     FLastWriteTime:=ftLastWriteTime;
-    Int64Rec(tmpFileSize).Hi:=nFileSizeHigh;
-    Int64Rec(tmpFileSize).Lo:=nFileSizeLow;
-    FFileSize:=tmpFileSize;
+    Int64Rec(FSize).Hi:=nFileSizeHigh;
+    Int64Rec(FSize).Lo:=nFileSizeLow;
     if FFileName=nil then FFileName:=StrNew(cFileName);
   end;
 end;
@@ -291,8 +287,8 @@ begin
     ftCreationTime:=FCreationTime;
     ftLastAccessTime:=FLastAccessTime;
     ftLastWriteTime:=FLastWriteTime;
-    nFileSizeHigh:=Int64Rec(FFileSize).Hi;
-    nFileSizeLow:=Int64Rec(FFileSize).Lo;
+    nFileSizeHigh:=Int64Rec(FSize).Hi;
+    nFileSizeLow:=Int64Rec(FSize).Lo;
     StrCopy(cFileName, FFileName);
   end;
 end;
@@ -410,8 +406,8 @@ begin
   if Self<>aObject then
     if aObject is TFileObject then
       begin
-        Result:=CompInt(FFileSize,
-                        aObject.FFileSize);
+        Result:=CompInt(FSize,
+                        aObject.FSize);
         if (Result=0) and (cfHash in aFlags) then
         begin
 {$IFDEF MD5}
@@ -481,7 +477,7 @@ end;
 constructor TDirectoryObject.Create(aFileSystemRecord: TWin32FindData);
 begin
   inherited Create(aFileSystemRecord);
-  FFileSize:=0;
+  FSize:=0;
 //  FLinksCount:=0;
   FDirectoryList:=TFileSystemObjectList.Create;
 end;
@@ -507,7 +503,7 @@ begin
   if Self<>aObject then
     if aObject is TDirectoryObject then
       begin
-        Result:=CompInt(FDirectorySize, (aObject as TDirectoryObject).FDirectorySize);
+        Result:=CompInt(FSize, (aObject as TDirectoryObject).FSize);
         if (Result=0) then
         begin
           Result:=FDirectoryList.Compare(
@@ -541,7 +537,7 @@ begin
       Inc((aObject as TDirectoryObject).FLinksCount);
 }
     FDirectoryList.Add(aObject);
-    Inc(FDirectorySize, aObject.FFileSize);
+    Inc(FSize, aObject.FSize);
   end;
 end;
 
