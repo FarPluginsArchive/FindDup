@@ -9,7 +9,8 @@ unit Main;
 Interface
 
 uses
-//    Qmemory,
+    LocalTypes,
+    LocalUtils,
 {$IFDEF DEBUG}
     DebugLog, 
 {$ENDIF}
@@ -43,7 +44,7 @@ type
       FIncludeFileMasks, FExcludeDirMasks, FSearchPaths: TStringList;
     protected
       function IsBreak: Boolean;
-      procedure FindDupFile(Cat: String);
+      procedure FindDupFile(Cat: TPLocalChar);
       function FindDupDir(Cat: String): TDirectoryObject;
       function ProcessAllDisks: Integer;
     public
@@ -127,34 +128,48 @@ begin
   end;
 end;
 
-procedure TFarPlugin.FindDupFile(Cat: String);
+procedure TFarPlugin.FindDupFile(Cat: TPLocalChar);
 var
   hFindFile: THandle;
-  FindData: TWin32FindData;
+  FindData: TLocalWin32FindData;
   I: Integer;
   Found: Bool;
+  tmpStr: TPLocalChar;
 begin
   if Assigned(FExcludeDirMasks) then
   begin
     I:=0;
     while (I<FExcludeDirMasks.Count) and
-          (CmpName(PChar(FExcludeDirMasks.Strings[I]),
-           PChar(Cat),
-           False)=False) do Inc(I);
+          (CmpName(TPLocalChar(FExcludeDirMasks.Strings[I]), Cat, False)=False) do Inc(I);
     if I<>FExcludeDirMasks.Count then Exit;
   end;
 
-  hFindFile:=FindFirstFile(PChar(Cat+'*'), FindData);
+  try
+{$IFDEF UNICODE}
+    tmpStr:=LocalStrCopyCat(['\\?\', Cat, '*']);
+    hFindFile:=FindFirstFileW(tmpStr, FindData);
+{$ELSE}
+    tmpStr:=LocalStrCopyCat([Cat, '*']);
+    hFindFile:=FindFirstFile(tmpStr, FindData);
+{$ENDIF}
+  finally
+    LocalStrDispose(tmpStr);
+  end;    
   if hFindFile<>INVALID_HANDLE_VALUE then
     begin
       Found:=True;
       while (Found<>False) and (not isBreak) do
       begin
-        if (FindData.dwFileAttributes and faDirectory)<>0 then
+        if ((FindData.dwFileAttributes and faDirectory)<>0) and
+           (TLocalString(FindData.cFileName)<>'.') and
+           (TLocalString(FindData.cFileName)<>'..') then
           begin
-            if (StrPas(@FindData.cFileName)<>'.') and
-               (StrPas(@FindData.cFileName)<>'..') then
-              FindDupFile(Cat+StrPas(@FindData.cFileName)+'\');
+    	    tmpStr:=LocalStrCopyCat([Cat, @FindData.cFileName, '\']);
+            try
+              FindDupFile(tmpStr);
+            finally
+              LocalStrDispose(tmpStr);
+            end;
           end
         else
           begin
@@ -162,32 +177,20 @@ begin
               begin
                 I:=0;
                 while (I<FIncludeFileMasks.Count) and
-                      (CmpName(PChar(FIncludeFileMasks.Strings[I]),
+                      (CmpName(TPLocalChar(FIncludeFileMasks.Strings[I]),
                        @FindData.cFileName,
                        False)=False) do Inc(I);
                 if I<>FIncludeFileMasks.Count then
-                begin
-                  Move(FindData.cFileName,
-                       FindData.cFileName[Length(Cat)],
-                       StrLen(FindData.cFileName)+1);
-                  Move(Cat[1],
-                       FindData.cFileName,
-                       Length(Cat));
-                  FFileGroupList.Add(TFileObject.Create(FindData));
-                end;
+                  FFileGroupList.Add(TFileObject.Create(Cat, FindData));
               end
             else
-              begin
-                Move(FindData.cFileName,
-                     FindData.cFileName[Length(Cat)],
-                     StrLen(FindData.cFileName)+1);
-                Move(Cat[1],
-                     FindData.cFileName,
-                     Length(Cat));
-                FFileGroupList.Add(TFileObject.Create(FindData));
-              end;
+              FFileGroupList.Add(TFileObject.Create(Cat, FindData));
           end;
+{$IFDEF UNICODE}
+        Found:=FindNextFileW(hFindFile, FindData);
+{$ELSE}
         Found:=FindNextFile(hFindFile, FindData);
+{$ENDIF}
       end;
       Windows.FindClose(hFindFile);
     end;
@@ -288,9 +291,9 @@ end;
 
 function TFarPlugin.ProcessAllDisks: Integer;
 var
-   Drivers: array[0..255] of Char;
+   Drivers: array[0..255] of TLocalChar;
    Index: Byte;
-   RootDirectory: String;
+   RootDirectory: TPLocalChar;
    I: LongInt;
 begin
      if FileExists(GetPluginPath+'exclude.txt') then
@@ -318,18 +321,22 @@ begin
          for I:=0 to FSearchPaths.Count-1 do
          begin
            if FileExists(GetPluginPath+'FindDupDir.flg') then
-             FindDupDir(PChar(FSearchPaths[I]))
+             FindDupDir(TPLocalChar(FSearchPaths[I]))
            else
-             FindDupFile(PChar(FSearchPaths[I]));
+             FindDupFile(TPLocalChar(FSearchPaths[I]));
          end;
          FSearchPaths.Free;
        end
      else
        begin
+{$IFDEF UNICODE}
+         GetLogicalDriveStringsW(SizeOf(Drivers), @Drivers);
+{$ELSE} 
          GetLogicalDriveStrings(SizeOf(Drivers), @Drivers);
+{$ENDIF}
          Index:=0;
-         RootDirectory:=StrPas(Drivers);
-         while (Length(RootDirectory)>0) and (not isBreak) do
+         RootDirectory:=Drivers;
+         while (LocalStrLen(RootDirectory)>0) and (not isBreak) do
          begin
            if FileExists(GetPluginPath+'FindDupDir.flg') then
              FindDupDir(RootDirectory)
@@ -337,7 +344,7 @@ begin
              FindDupFile(RootDirectory);
 
 (*
-              case GetDriveType(PChar(@RootDirectory[1])) of
+              case GetDriveType(TPChar(@RootDirectory[1])) of
 //                DRIVE_REMOVABLE: Writeln(F, 'сменный)');
                 DRIVE_FIXED,
                 DRIVE_CDROM:     begin
@@ -348,8 +355,8 @@ begin
                 DRIVE_RAMDISK:   Writeln(F, 'RAM)');
               end;
 *)
-              Index:=Index+Length(RootDirectory)+1;
-              RootDirectory:=StrPas(@Drivers[Index]);
+              Index:=Index+LocalStrLen(RootDirectory)+1;
+              RootDirectory:=@Drivers[Index];
          end;
        end;
 //     FindDupDir('C:\2\');
