@@ -139,7 +139,7 @@ begin
     I:=0;
     while (I<FExcludeDirMasks.Count) and
           (CmpName(PChar(FExcludeDirMasks.Strings[I]),
-           PChar(Cat+StrPas(@FindData.cFileName)+'\'),
+           PChar(Cat),
            False)=False) do Inc(I);
     if I<>FExcludeDirMasks.Count then Exit;
   end;
