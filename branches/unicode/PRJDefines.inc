@@ -6,6 +6,8 @@
 
 {.$DEFINE DEBUG}
 
+{.$DEFINE UNICODE}
+
 // сортировать файлы на панели по размеру
 {.$DEFINE SORT_PANEL}
 
