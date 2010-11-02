@@ -11,6 +11,8 @@ unit FileSystemObjects;
 interface
 
 uses
+    LocalTypes,
+    LocalUtils,
     Classes,
 {$IFDEF MD5}
     MD5,
@@ -70,12 +72,13 @@ type
     FLastAccessTime: TFileTime;
     FLastWriteTime: TFileTime;
     FSize: INT64;
-    FFileName: PChar;
+    FFileName: TPLocalChar;
     FFlags: TFileSystemFlags;
     function CompInt(aInt1, aInt2: Int64): Integer;
-    procedure SetFileSystemRecord(const aFileSystemRecord: TWin32FindData);
+    procedure SetFileSystemRecord(const aPath: TPLocalChar; const aFileSystemRecord: TLocalWin32FindData);
   public
-    constructor Create(const aFileSystemRecord: TWin32FindData);
+    constructor Create(const aFileSystemRecord: TLocalWin32FindData);
+    constructor Create(const aPath: TPLocalChar; const aFileSystemRecord: TLocalWin32FindData); overload;
     destructor Destroy; override;
     procedure IncRef;
     procedure DecRef;
@@ -115,7 +118,8 @@ type
   private
     FDirectoryList: TFileSystemObjectList;
   public
-    constructor Create(aFileSystemRecord: TWin32FindData);
+    constructor Create(const aFileSystemRecord: TLocalWin32FindData);
+    constructor Create(const aPath: TPLocalChar; const aFileSystemRecord: TLocalWin32FindData); overload;
     destructor Destroy; override;
     function Compare(aObject: TFileSystemObject; aFlags: TCompareFlags): Integer; override;
 (*
@@ -236,17 +240,25 @@ end;
 }
 // реализация TFileSystemObject
 
-constructor TFileSystemObject.Create(const aFileSystemRecord: TWin32FindData);
+constructor TFileSystemObject.Create(const aFileSystemRecord: TLocalWin32FindData);
 begin
   inherited Create;
   FRefCount:=0;
-  SetFileSystemRecord(aFileSystemRecord);
+  SetFileSystemRecord('', aFileSystemRecord);
+  FFlags:=[];
+end;
+
+constructor TFileSystemObject.Create(const aPath: TPLocalChar; const aFileSystemRecord: TLocalWin32FindData); overload;
+begin
+  inherited Create;
+  FRefCount:=0;
+  SetFileSystemRecord(aPath, aFileSystemRecord);
   FFlags:=[];
 end;
 
 destructor TFileSystemObject.Destroy;
 begin
-  if FFileName<>nil then StrDispose(FFileName);
+  if FFileName<>nil then LocalStrDispose(FFileName);
   inherited Destroy;
 end;
 
@@ -266,7 +278,7 @@ begin
                      inherited Free;
 end;
 
-procedure TFileSystemObject.SetFileSystemRecord(const aFileSystemRecord: TWin32FindData);
+procedure TFileSystemObject.SetFileSystemRecord(const aPath: TPLocalChar; const aFileSystemRecord: TLocalWin32FindData);
 begin
   with aFileSystemRecord do
   begin
@@ -276,16 +288,17 @@ begin
     FLastWriteTime:=ftLastWriteTime;
     Int64Rec(FSize).Hi:=nFileSizeHigh;
     Int64Rec(FSize).Lo:=nFileSizeLow;
-    if FFileName=nil then FFileName:=StrNew(cFileName);
+    if FFileName=nil then FFileName:=LocalStrCopyCat([aPath, cFileName]);
+//    FFileName:=aPath+cFileName;
   end;
 end;
 
-procedure TFileSystemObject.GetFileSystemRecord(var aFileSystemRecord{$IFDEF CONTROL_TYPE}: TWin32FindData{$ENDIF});
+procedure TFileSystemObject.GetFileSystemRecord(var aFileSystemRecord{$IFDEF CONTROL_TYPE}: TLocalWin32FindData{$ENDIF});
 begin
 {$IFDEF CONTROL_TYPE}
   ZeroMemory(@aFileSystemRecord, SizeOf(aFileSystemRecord));
 {$ENDIF}
-  with TWin32FindData(aFileSystemRecord) do
+  with TLocalWin32FindData (aFileSystemRecord) do
   begin
     dwFileAttributes:=FFileAttributes;
     ftCreationTime:=FCreationTime;
@@ -293,7 +306,7 @@ begin
     ftLastWriteTime:=FLastWriteTime;
     nFileSizeHigh:=Int64Rec(FSize).Hi;
     nFileSizeLow:=Int64Rec(FSize).Lo;
-    StrCopy(cFileName, FFileName);
+    LocalStrCopy(cFileName, FFileName);
   end;
 end;
 
@@ -312,9 +325,22 @@ end;
 function TFileSystemObject.IsValid: Boolean;
 // конечно такая проверка не корректна, ведь файл могли не только изменить,
 // но и отредактировать
+{$IFDEF UNICODE}
+var
+  tmpStr: TPLocalChar;
+{$ENDIF}
 begin
   Result:=False;
+{$IFDEF UNICODE}
+  tmpStr:=LocalStrCopyCat(['\\?\', FFileName]);
+  if Assigned(tmpStr) then
+  begin
+    FFileAttributes:=GetFileAttributesW(tmpStr);
+    LocalStrDispose(tmpStr);
+  end;
+{$ELSE}
   FFileAttributes:=GetFileAttributes(FFileName);
+{$ENDIF}
   if FFileAttributes<>INVALID_HANDLE_VALUE then
     Result:=True
   else
@@ -333,7 +359,7 @@ begin
     try
       if not (flMD5Calc in FFlags) then
       begin
-        FMD5:=MD5File(StrPas(FFileName));
+        FMD5:=MD5File(FFileName);
         Include(FFlags, flMD5Calc);
       end;
       Result:=True;
@@ -353,7 +379,7 @@ begin
     try
       if not (flCRC32Calc in FFlags) then
       begin
-        FCRC32:=CRC32File(StrPas(@FFileName));
+        FCRC32:=CRC32File(FFileName);
         Include(FFlags, flCRC32Calc);
       end;
       Result:=True;
@@ -365,7 +391,7 @@ end;
 {$ENDIF}
 
 {$IFDEF CMPDIRECT}
-function FileCompare(aFileName1, aFileName2: string): Integer;
+function FileCompare(aFileName1, aFileName2: TPLocalChar): Integer;
 
   function Min(X, Y: LongInt): LongInt;
   begin
@@ -446,7 +472,7 @@ begin
             Result:=-1;
 {$ENDIF}
 {$IFDEF CMPDIRECT}
-          Result:=FileCompare(StrPas(FFileName), StrPas((aObject as TFileObject).FFileName));
+          Result:=FileCompare(FFileName, (aObject as TFileObject).FFileName);
 {$ENDIF}
         end;
       end
@@ -493,9 +519,17 @@ end;
 
 // реализация TDirectoryObject
 
-constructor TDirectoryObject.Create(aFileSystemRecord: TWin32FindData);
+constructor TDirectoryObject.Create(const aFileSystemRecord: TLocalWin32FindData);
 begin
   inherited Create(aFileSystemRecord);
+  FSize:=0;
+//  FLinksCount:=0;
+  FDirectoryList:=TFileSystemObjectList.Create;
+end;
+
+constructor TDirectoryObject.Create(const aPath: TPLocalChar; const aFileSystemRecord: TLocalWin32FindData); overload;
+begin
+  inherited Create(aPath, aFileSystemRecord);
   FSize:=0;
 //  FLinksCount:=0;
   FDirectoryList:=TFileSystemObjectList.Create;
