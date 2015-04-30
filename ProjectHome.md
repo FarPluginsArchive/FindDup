@@ -1,0 +1,1 @@
+Plugin for Far Manager (http://farmanager.com). Designed to search file duplicates.
